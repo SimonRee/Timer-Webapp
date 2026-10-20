@@ -25,6 +25,11 @@ const fs=require('node:fs');
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   const text=await page.locator('#countdown').boundingBox();assert.ok(text.x>=0&&text.x+text.width<=width+1);
   const shell=await page.locator('.app-shell').boundingBox();assert.equal(Math.round(shell.width),width);
+  const currentPanel=await page.locator('.timer-current').boundingBox();
+  const nextPanel=await page.locator('.timer-next').boundingBox();
+  assert.equal(Math.round(currentPanel.width),width);
+  assert.equal(Math.round(nextPanel.width),width);
+  assert.ok(Math.abs(nextPanel.y-(currentPanel.y+currentPanel.height))<1,'Upcoming phase stays below current phase');
   const contained=await page.evaluate(()=>{
    for(const [parent,children]of [['.timer-header',['.timer-header h1','#total-time']],['.timer-next',['#next-label','#next-time']],['.timer-current',['#phase-label','#countdown']]]){
     const box=document.querySelector(parent).getBoundingClientRect();

@@ -40,5 +40,6 @@ L'interfaccia utilizza Zuume SemiBold (600), con Regular e Medium disponibili co
 
 ## Layout responsive
 
-L’app usa tutta la larghezza disponibile. Su telefono il timer e la fase successiva sono impilati; su desktop e su schermi bassi in orizzontale sono affiancati. I testi dei pannelli si dimensionano in base allo spazio disponibile, mantenendo margini interni. La lista workout usa due colonne da tablet in su.
+L’app usa tutta la larghezza disponibile. Il timer corrente e la fase successiva sono sempre impilati e occupano tutta la larghezza, su telefono, tablet e desktop, anche in orizzontale. I testi dei pannelli si dimensionano in base allo spazio disponibile, mantenendo margini interni. La lista workout usa due colonne da tablet in su.
+
 
