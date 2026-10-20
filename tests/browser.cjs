@@ -20,10 +20,25 @@ const fs=require('node:fs');
  await page.evaluate(()=>localStorage.setItem('timerplus_workouts',JSON.stringify([{id:'user-test',name:'USER TEST',prepare:10,work:70,rest:30,rounds:3,cooldown:0}])));
  await page.reload();
  assert.equal(await page.locator('#total-time').textContent(),'04:40');
- for(const [width,height] of [[375,812],[390,844],[393,852],[430,932],[844,390]]){
+ for(const [width,height] of [[320,568],[375,812],[390,844],[393,852],[430,932],[768,1024],[844,390],[1024,768],[1366,768],[1920,1080],[2560,1440]]){
   await page.setViewportSize({width,height});await page.screenshot({path:`tests/screenshots/timer-${width}.png`});
   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   const text=await page.locator('#countdown').boundingBox();assert.ok(text.x>=0&&text.x+text.width<=width+1);
+  const shell=await page.locator('.app-shell').boundingBox();assert.equal(Math.round(shell.width),width);
+  const contained=await page.evaluate(()=>{
+   for(const [parent,children]of [['.timer-header',['.timer-header h1','#total-time']],['.timer-next',['#next-label','#next-time']],['.timer-current',['#phase-label','#countdown']]]){
+    const box=document.querySelector(parent).getBoundingClientRect();
+    for(const child of children){const r=document.querySelector(child).getBoundingClientRect();if(r.top<box.top+3||r.bottom>box.bottom-3||r.left<box.left||r.right>box.right)return false;}
+   }return true;
+  });assert.ok(contained,`Timer text must fit inside colored panels at ${width}x${height}`);
+  await page.getByRole('button',{name:'Impostazioni timer',exact:true}).click();
+  assert.ok(await page.evaluate(()=>document.querySelector('.scroll-content').scrollWidth<=innerWidth));
+  if(width===1366)await page.screenshot({path:'tests/screenshots/settings-desktop.png'});
+  await page.locator('[data-field="work"]').click();
+  const wheel=await page.locator('.picker-group').boundingBox();
+  assert.ok(wheel.x>=0&&wheel.x+wheel.width<=width&&wheel.y+wheel.height<=height,`Picker fits at ${width}`);
+  await page.getByRole('button',{name:'INDIETRO',exact:true}).click();
+  await page.getByRole('button',{name:'ANNULLA',exact:true}).click();
  }
  await page.setViewportSize({width:390,height:844});
  await page.getByRole('button',{name:'Impostazioni timer',exact:true}).click();await page.screenshot({path:'tests/screenshots/settings.png'});
@@ -46,6 +61,14 @@ const fs=require('node:fs');
  await page.reload();assert.equal(await page.locator('.timer-header h1').textContent(),'TEST WORKOUT');
  await page.getByRole('button',{name:'AVVIA',exact:true}).click();await page.waitForTimeout(1100);await page.getByRole('button',{name:'PAUSA',exact:true}).click();const paused=await page.locator('#countdown').textContent();await page.waitForTimeout(1100);assert.equal(await page.locator('#countdown').textContent(),paused);
  await page.getByRole('button',{name:'CRONOMETRO',exact:true}).click();await page.getByRole('button',{name:'AVVIA',exact:true}).click();await page.waitForTimeout(150);await page.getByRole('button',{name:'PAUSA',exact:true}).click();assert.notEqual(await page.locator('#stopwatch-time').textContent(),'00:00.00');
+ for(const [width,height]of [[375,812],[844,390],[1366,768],[1920,1080]]){
+  await page.setViewportSize({width,height});
+  for(const tab of ['CRONOMETRO','ALTRO','TABATA']){
+   await page.getByRole('button',{name:tab,exact:true}).click();
+   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+   if(tab==='CRONOMETRO')assert.ok(await page.locator('#stopwatch-time').evaluate(e=>e.scrollWidth<=e.clientWidth));
+  }
+ }
  const otherVisitor=await browser.newPage();await otherVisitor.goto('http://127.0.0.1:5180');
  assert.equal(await otherVisitor.locator('.workout-item').count(),0);
  assert.deepEqual(await otherVisitor.evaluate(()=>JSON.parse(localStorage.getItem('timerplus_workouts'))),[]);

@@ -33,7 +33,12 @@ Su iOS audio, vibrazione e wake lock dipendono dalle capacità e autorizzazioni 
 
 `npm test` esegue i test del motore con un orologio controllato: durata totale, confini delle fasi, pause, recupero dal background, fasi a zero e validazione.
 
-`tests/browser.cjs` è il test di integrazione dell'ambiente di sviluppo locale, con Playwright e Microsoft Edge. Verifica viewport 375×812, 390×844, 393×852, 430×932 e 844×390, selettori, creazione workout, persistenza, pausa e cronometro. Le schermate di controllo sono in `tests/screenshots/`. I percorsi del runtime nel test sono specifici di questo computer.
+`tests/browser.cjs` è il test di integrazione dell'ambiente di sviluppo locale, con Playwright e Microsoft Edge. Verifica undici viewport da 320×568 a 2560×1440, contenimento dei testi nei pannelli, larghezza completa del layout, selettori, creazione workout, persistenza, pausa, Tabata, impostazioni e cronometro. Le schermate di controllo sono in `tests/screenshots/`. I percorsi del runtime nel test sono specifici di questo computer.
 
 L'interfaccia utilizza Zuume SemiBold (600), con Regular e Medium disponibili come pesi 400 e 500. I file del font sono stati forniti dall'utente e sono inclusi in assets per il caricamento locale e offline. Le dimensioni dei testi sono adattate al carattere condensato.
+
+
+## Layout responsive
+
+L’app usa tutta la larghezza disponibile. Su telefono il timer e la fase successiva sono impilati; su desktop e su schermi bassi in orizzontale sono affiancati. I testi dei pannelli si dimensionano in base allo spazio disponibile, mantenendo margini interni. La lista workout usa due colonne da tablet in su.
 
